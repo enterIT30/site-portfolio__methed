@@ -53,7 +53,7 @@ let handlerModal = (btnOpen, modal, changeClass, btnClose, openingSpeed) => {
       closeModal();
     }
   });
-}
+};
 
 /* плохо работает на iPhone
   function disabledScroll() {
@@ -71,13 +71,18 @@ function disabledScroll() {
   document.body.scrollPosition = window.scrollY;// создание св-ва эл-та body
 
   document.body.style.cssText =`
-  overflow: hidden;
-  position: fixed;
-  top: -${document.body.scrollPosition}px; //!!!!!
-  left: 0;
-  height: 100vh;
-  `;
+    overflow: hidden;
+    top: -${document.body.scrollPosition}px; //!!!!!
+    left: 0;
+    height: 100vh;
+    `;
 }
+/* Ломают верстку
+  position: fixed;
+  width: 100vh;
+*/
+
+
 
 function enabledScroll() {
   document.body.style.cssText = 'position: relative';
@@ -85,14 +90,6 @@ function enabledScroll() {
 }
 
 handlerModal(presentOrderBtn, pageOverlayModal, 'page__overlay_modal_open', modalClose, 'slow');
-
-
-
-
-
-
-
-
 
 
 {
@@ -114,3 +111,44 @@ handlerModal(presentOrderBtn, pageOverlayModal, 'page__overlay_modal_open', moda
 
   handlerBurger(headerContactsBurger, headerContacts, 'header__contacts_open');
 }
+
+{
+  const portfolioList = document.querySelector('.portfolio__list');
+  const pageOverlay = document.createElement('div');
+  pageOverlay.classList.add('page__overlay');
+
+  portfolioList.addEventListener('click', (e) => {
+    const card = e.target.closest('.card');
+    if (card) {
+      disabledScroll();
+      document.body.append(pageOverlay);
+      let title = card.querySelector('.card__client');
+
+      const imgBig = document.createElement('picture');
+
+      imgBig.style.cssText = `
+        position: absolute;
+        top: 0px;
+        right: 50%;
+        transform: translateX(50%);
+        width: 90%;
+        max-width: 1440px;
+      `;
+
+      imgBig.innerHTML = `
+        <source srcset="${card.dataset.fullImage}.avif" type="image/avif">
+        <source srcset="${card.dataset.fullImage}.webp" type="image/webp">
+        <img src="${card.dataset.fullImage}.jpg" alt="${title.textContent}">
+      `;
+      pageOverlay.append(imgBig);
+    }
+  });
+
+  pageOverlay.addEventListener('click', (e) => {
+    enabledScroll()
+    pageOverlay.remove();
+    pageOverlay.textContent = ''; // очистить page__overlay
+  });
+
+}
+
